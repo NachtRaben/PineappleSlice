@@ -1,0 +1,19 @@
+plugins {
+    id "java"
+    //id "com.github.johnrengelman.shadow" version "2.0.0"
+}
+
+group 'com.nachtraben'
+version '1.0'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'org.slf4j:slf4j-api:1.7.25'
+    compile 'redis.clients:jedis:2.9.0'
+    testCompile 'ch.qos.logback:logback-classic:1.2.3'
+}
