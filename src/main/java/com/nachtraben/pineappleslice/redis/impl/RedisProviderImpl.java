@@ -54,7 +54,13 @@ public class RedisProviderImpl implements RedisProvider {
         checkStatus(subscriber);
         JedisAdapter adapter = new JedisAdapter(subscriber);
         subscribers.put(subscriber, adapter);
-        doVoidCall(jedis -> jedis.subscribe(adapter, channel));
+        try {
+            doVoidCall(jedis -> {
+                jedis.subscribe(adapter, channel);
+            });
+        } catch (Exception e) {
+            LOGGER.error("Something went wrong while subscribing, connection lost?", e);
+        }
     }
 
     @Override
@@ -62,7 +68,14 @@ public class RedisProviderImpl implements RedisProvider {
         checkStatus(subscriber);
         JedisAdapter adapter = new JedisAdapter(subscriber);
         subscribers.put(subscriber, adapter);
-        doVoidCall(jedis -> jedis.subscribe(adapter, pattern));
+        try {
+            doVoidCall(jedis -> {
+                jedis.subscribe(adapter, pattern);
+            });
+        } catch (Exception e) {
+            LOGGER.error("Something went wrong while subcribing, connection lost?", e);
+        }
+
     }
 
     @Override
@@ -77,7 +90,13 @@ public class RedisProviderImpl implements RedisProvider {
 
     @Override
     public void publish(String channel, String data) {
-        doVoidCall(jedis -> jedis.publish(channel, data));
+        try {
+            doVoidCall(jedis -> {
+                jedis.publish(channel, data);
+            });
+        } catch (Exception e) {
+            LOGGER.error("Something went wrong while publishing, connection lost?", e);
+        }
     }
 
     private void checkStatus(RedisSubscriber subscriber) throws SubscriberException {
@@ -90,15 +109,15 @@ public class RedisProviderImpl implements RedisProvider {
         pool.destroy();
     }
 
-    private void doVoidCall(Consumer<Jedis> call) {
-        try (Jedis jedis = pool.getResource()) {
-            call.accept(jedis);
+    private final void doVoidCall(Consumer<Jedis> call) {
+        try (Jedis redis = pool.getResource()) {
+            call.accept(redis);
         }
     }
 
     private <R> R doCall(Function<Jedis, R> call) {
-        try (Jedis jedis = pool.getResource()) {
-            return call.apply(jedis);
+        try (Jedis redis = pool.getResource()) {
+            return call.apply(redis);
         }
     }
 

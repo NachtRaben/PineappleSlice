@@ -1,6 +1,7 @@
 package com.nachtraben.pineappleslice.redis;
 
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.exceptions.JedisException;
 
 import java.util.List;
 import java.util.Map;
@@ -15,7 +16,7 @@ public interface Redis extends AutoCloseable {
      *
      * @param index the index
      */
-    void select(int index);
+    void select(int index) throws JedisException;
 
     /**
      * Gets the current DB index.
@@ -32,7 +33,7 @@ public interface Redis extends AutoCloseable {
      * @return the string
      */
 /* Getters  and Setters */
-    String get(String key);
+    String get(String key) throws JedisException;
 
     /**
      * Sets a key to a value..
@@ -40,7 +41,7 @@ public interface Redis extends AutoCloseable {
      * @param key   the key
      * @param value the value
      */
-    void set(String key, String value);
+    void set(String key, String value) throws JedisException;
 
     /**
      * Gets a JSON string of the key's value.
@@ -50,7 +51,7 @@ public interface Redis extends AutoCloseable {
      *
      * @return the string
      */
-    String hget(String key, String hash);
+    String hget(String key, String hash) throws JedisException;
 
     /**
      * Gets a map of all tokens and values in a key.
@@ -59,7 +60,7 @@ public interface Redis extends AutoCloseable {
      *
      * @return the map
      */
-    Map<String, String> hgetall(String key);
+    Map<String, String> hgetall(String key) throws JedisException;
 
     /**
      * Sets a token and value under the specific key.
@@ -68,7 +69,7 @@ public interface Redis extends AutoCloseable {
      * @param hash  the hash
      * @param value the value
      */
-    void hset(String key, String hash, String value);
+    void hset(String key, String hash, String value) throws JedisException;
 
     /**
      * Gets the values of all the hash tokens specified.
@@ -78,7 +79,7 @@ public interface Redis extends AutoCloseable {
      *
      * @return the list
      */
-    List<String> hmget(String key, String... hashes);
+    List<String> hmget(String key, String... hashes) throws JedisException;
 
     /**
      * Sets keys hashes and tokens specified in the hashmap
@@ -87,14 +88,14 @@ public interface Redis extends AutoCloseable {
      * @param key    the key
      * @param hashes the hashes
      */
-    void hmset(String key, Map<String, String> hashes);
+    void hmset(String key, Map<String, String> hashes) throws JedisException;
 
     /**
      * Gets all keys in the currently selected database.
      *
      * @return the list
      */
-    List<String> scan();
+    List<String> scan() throws JedisException;
 
     /**
      * Gets all the keys in the currently selected database based on a pattern.
@@ -103,7 +104,7 @@ public interface Redis extends AutoCloseable {
      *
      * @return the list
      */
-    List<String> scan(String pattern);
+    List<String> scan(String pattern) throws JedisException;
 
     /**
      * Gets all the keys in the currently selected database with pattern and limit.
@@ -113,7 +114,7 @@ public interface Redis extends AutoCloseable {
      *
      * @return the list
      */
-    List<String> scan(String pattern, int count);
+    List<String> scan(String pattern, int count) throws JedisException;
 
     /**
      * Gets a list of tokens and values for the specified key.
@@ -122,7 +123,7 @@ public interface Redis extends AutoCloseable {
      *
      * @return the list
      */
-    List<Map.Entry<String, String>> hscan(String key);
+    List<Map.Entry<String, String>> hscan(String key) throws JedisException;
 
     /**
      * Gets a list of tokens and values for the specified key based on a pattern.
@@ -132,7 +133,7 @@ public interface Redis extends AutoCloseable {
      *
      * @return the list
      */
-    List<Map.Entry<String, String>> hscan(String key, String pattern);
+    List<Map.Entry<String, String>> hscan(String key, String pattern) throws JedisException;
 
     /**
      * Gets a list of tokens and values for the specified key based on a pattern and limit.
@@ -143,7 +144,7 @@ public interface Redis extends AutoCloseable {
      *
      * @return the list
      */
-    List<Map.Entry<String, String>> hscan(String key, String pattern, int count);
+    List<Map.Entry<String, String>> hscan(String key, String pattern, int count) throws JedisException;
 
     /**
      * Sets an expiration time in seconds for a specified key.
@@ -155,7 +156,7 @@ public interface Redis extends AutoCloseable {
      * @return the boolean
      */
 /* Expirations */
-    boolean expire(String key, int seconds);
+    boolean expire(String key, int seconds) throws JedisException;
 
     /**
      * Expireat boolean.
@@ -165,7 +166,7 @@ public interface Redis extends AutoCloseable {
      *
      * @return the boolean
      */
-    boolean expireat(String key, long time);
+    boolean expireat(String key, long time) throws JedisException;
 
     /**
      * Pexpire boolean.
@@ -175,7 +176,7 @@ public interface Redis extends AutoCloseable {
      *
      * @return the boolean
      */
-    boolean pexpire(String key, long ms);
+    boolean pexpire(String key, long ms) throws JedisException;
 
     /**
      * Del long.
@@ -185,7 +186,7 @@ public interface Redis extends AutoCloseable {
      * @return the long
      */
 /* Deleters */
-    Long del(String... keys);
+    Long del(String... keys) throws JedisException;
 
     /**
      * Delete specified hashes from provided key.
@@ -195,7 +196,7 @@ public interface Redis extends AutoCloseable {
      *
      * @return the long
      */
-    Long hdel(String key, String... hashes);
+    Long hdel(String key, String... hashes) throws JedisException;
 
     /**
      * Gets jedis.
