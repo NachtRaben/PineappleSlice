@@ -30,8 +30,8 @@ public class RedisSessionImpl implements Redis {
     }
 
     @Override
-    public void select(int index) {
-        if(index < 0)
+    public void select(int index) throws JedisException {
+        if (index < 0)
             throw new IllegalArgumentException("Indexes must be non-negative!");
         try {
             connection.select(index);
@@ -48,7 +48,7 @@ public class RedisSessionImpl implements Redis {
     }
 
     @Override
-    public String get(String key) {
+    public String get(String key) throws JedisException {
         try {
             checkIndex();
             return connection.get(key);
@@ -59,7 +59,7 @@ public class RedisSessionImpl implements Redis {
     }
 
     @Override
-    public void set(String key, String value) {
+    public void set(String key, String value) throws JedisException {
         try {
             checkIndex();
             connection.set(key, value);
@@ -70,7 +70,7 @@ public class RedisSessionImpl implements Redis {
     }
 
     @Override
-    public String hget(String key, String hash) {
+    public String hget(String key, String hash) throws JedisException {
         try {
             checkIndex();
             return connection.hget(key, hash);
@@ -81,7 +81,7 @@ public class RedisSessionImpl implements Redis {
     }
 
     @Override
-    public Map<String, String> hgetall(String key) {
+    public Map<String, String> hgetall(String key) throws JedisException {
         try {
             checkIndex();
             return connection.hgetAll(key);
@@ -92,7 +92,7 @@ public class RedisSessionImpl implements Redis {
     }
 
     @Override
-    public void hset(String key, String hash, String value) {
+    public void hset(String key, String hash, String value) throws JedisException {
         try {
             checkIndex();
             connection.hset(key, hash, value);
@@ -103,7 +103,7 @@ public class RedisSessionImpl implements Redis {
     }
 
     @Override
-    public List<String> hmget(String key, String... hashes) {
+    public List<String> hmget(String key, String... hashes) throws JedisException {
         try {
             checkIndex();
             return connection.hmget(key, hashes);
@@ -114,7 +114,7 @@ public class RedisSessionImpl implements Redis {
     }
 
     @Override
-    public void hmset(String key, Map<String, String> hashes) {
+    public void hmset(String key, Map<String, String> hashes) throws JedisException {
         try {
             checkIndex();
             connection.hmset(key, hashes);
@@ -125,19 +125,19 @@ public class RedisSessionImpl implements Redis {
     }
 
     @Override
-    public List<String> scan() {
+    public List<String> scan() throws JedisException {
         return scan("*");
     }
 
     @Override
-    public List<String> scan(String pattern) {
+    public List<String> scan(String pattern) throws JedisException {
         return scan(pattern, -1);
     }
 
     @Override
-    public List<String> scan(String pattern, int count) {
+    public List<String> scan(String pattern, int count) throws JedisException {
         ScanParams params = new ScanParams().match(pattern);
-        if(count != -1 && count > 0)
+        if (count != -1 && count > 0)
             params = params.count(count);
 
         List<String> keys = new ArrayList<>();
@@ -149,7 +149,7 @@ public class RedisSessionImpl implements Redis {
                 result = connection.scan(cursor, params);
                 keys.addAll(result.getResult());
                 cursor = result.getStringCursor();
-            } while(!cursor.equals(ScanParams.SCAN_POINTER_START));
+            } while (!cursor.equals(ScanParams.SCAN_POINTER_START));
         } catch (JedisException e) {
             onError();
             throw e;
@@ -158,19 +158,19 @@ public class RedisSessionImpl implements Redis {
     }
 
     @Override
-    public List<Entry<String, String>> hscan(String key) {
+    public List<Entry<String, String>> hscan(String key) throws JedisException {
         return hscan(key, "*", -1);
     }
 
     @Override
-    public List<Entry<String, String>> hscan(String key, String pattern) {
+    public List<Entry<String, String>> hscan(String key, String pattern) throws JedisException {
         return hscan(key, pattern, -1);
     }
 
     @Override
-    public List<Entry<String, String>> hscan(String key, String pattern, int count) {
+    public List<Entry<String, String>> hscan(String key, String pattern, int count) throws JedisException {
         ScanParams params = new ScanParams().match(pattern);
-        if(count != -1 && count > 0)
+        if (count != -1 && count > 0)
             params = params.count(count);
 
         List<Entry<String, String>> keys = new ArrayList<>();
@@ -182,7 +182,7 @@ public class RedisSessionImpl implements Redis {
                 result = connection.hscan(key, cursor, params);
                 keys.addAll(result.getResult());
                 cursor = result.getStringCursor();
-            } while(!cursor.equals(ScanParams.SCAN_POINTER_START));
+            } while (!cursor.equals(ScanParams.SCAN_POINTER_START));
         } catch (JedisException e) {
             onError();
             throw e;
@@ -191,7 +191,7 @@ public class RedisSessionImpl implements Redis {
     }
 
     @Override
-    public boolean expire(String key, int seconds) {
+    public boolean expire(String key, int seconds) throws JedisException {
         try {
             checkIndex();
             return connection.expire(key, seconds) == 1;
@@ -202,7 +202,7 @@ public class RedisSessionImpl implements Redis {
     }
 
     @Override
-    public boolean expireat(String key, long unixTime) {
+    public boolean expireat(String key, long unixTime) throws JedisException {
         try {
             checkIndex();
             return connection.expireAt(key, unixTime) == 1;
@@ -213,7 +213,7 @@ public class RedisSessionImpl implements Redis {
     }
 
     @Override
-    public boolean pexpire(String key, long ms) {
+    public boolean pexpire(String key, long ms) throws JedisException {
         try {
             checkIndex();
             return connection.pexpire(key, ms) == 1;
@@ -224,7 +224,7 @@ public class RedisSessionImpl implements Redis {
     }
 
     @Override
-    public Long del(String... keys) {
+    public Long del(String... keys) throws JedisException {
         try {
             checkIndex();
             return connection.del(keys);
@@ -235,7 +235,7 @@ public class RedisSessionImpl implements Redis {
     }
 
     @Override
-    public Long hdel(String key, String... hashes) {
+    public Long hdel(String key, String... hashes) throws JedisException {
         try {
             checkIndex();
             return connection.hdel(key, hashes);
@@ -252,7 +252,7 @@ public class RedisSessionImpl implements Redis {
 
     @Override
     public void close() throws Exception {
-        connection.disconnect();
+        connection.close();
     }
 
     private void onError() {
@@ -260,11 +260,12 @@ public class RedisSessionImpl implements Redis {
     }
 
     private void checkIndex() {
-        if(connection.getDB() != index) {
+        if (connection.getDB() != index) {
             LOGGER.warn("Invalid database detected(Got disconnected?..), correcting...");
             try {
                 select(index);
-            } catch (JedisException ignored){}
+            } catch (JedisException ignored) {
+            }
         }
     }
 
