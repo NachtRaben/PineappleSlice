@@ -11,10 +11,10 @@
 
 # gradle
 build/
-gradle/
+#gradle/
 .gradle/
-gradlew
-gradlew.bat
+#gradlew
+#gradlew.bat
 
 # eclipse
 .classpath
