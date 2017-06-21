@@ -41,7 +41,7 @@ public class RedisProviderImpl implements RedisProvider {
     }
 
     @Override
-    public Redis getSession(int index) {
+    public Redis getSession(int index) throws JedisException {
         if (pool.isClosed())
             throw new IllegalStateException("The redis pool has already been shutdown!");
 
@@ -50,32 +50,23 @@ public class RedisProviderImpl implements RedisProvider {
     }
 
     @Override
-    public void subscribe(String channel, RedisSubscriber subscriber) throws SubscriberException {
+    public void subscribe(String channel, RedisSubscriber subscriber) throws SubscriberException, JedisException {
         checkStatus(subscriber);
         JedisAdapter adapter = new JedisAdapter(subscriber);
         subscribers.put(subscriber, adapter);
-        try {
-            doVoidCall(jedis -> {
-                jedis.subscribe(adapter, channel);
-            });
-        } catch (Exception e) {
-            LOGGER.error("Something went wrong while subscribing, connection lost?", e);
-        }
+        doVoidCall(jedis -> {
+            jedis.subscribe(adapter, channel);
+        });
     }
 
     @Override
-    public void psubscribe(String pattern, RedisSubscriber subscriber) throws SubscriberException {
+    public void psubscribe(String pattern, RedisSubscriber subscriber) throws SubscriberException, JedisException {
         checkStatus(subscriber);
         JedisAdapter adapter = new JedisAdapter(subscriber);
         subscribers.put(subscriber, adapter);
-        try {
-            doVoidCall(jedis -> {
-                jedis.subscribe(adapter, pattern);
-            });
-        } catch (Exception e) {
-            LOGGER.error("Something went wrong while subcribing, connection lost?", e);
-        }
-
+        doVoidCall(jedis -> {
+            jedis.subscribe(adapter, pattern);
+        });
     }
 
     @Override
