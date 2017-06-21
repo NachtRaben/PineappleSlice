@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
+import redis.clients.jedis.exceptions.JedisConnectionException;
 import redis.clients.jedis.exceptions.JedisException;
 
 import java.util.HashMap;
@@ -45,16 +46,8 @@ public class RedisProviderImpl implements RedisProvider {
         if (pool.isClosed())
             throw new IllegalStateException("The redis pool has already been shutdown!");
 
-        Jedis connection;
-        try {
-           connection = pool.getResource();
-        } catch (JedisException e) {
-            throw e;
-        }
-        if(connection != null)
-            return new RedisSessionImpl(connection, index);
-        else
-            return null;
+        Jedis connection = pool.getResource();
+        return new RedisSessionImpl(connection, index);
     }
 
     @Override
@@ -62,14 +55,9 @@ public class RedisProviderImpl implements RedisProvider {
         checkStatus(subscriber);
         JedisAdapter adapter = new JedisAdapter(subscriber);
         subscribers.put(subscriber, adapter);
-        try {
-            doVoidCall(jedis -> {
-                jedis.subscribe(adapter, channel);
-            });
-        } catch (JedisException e) {
-            throw e;
-        }
-
+        doVoidCall(jedis -> {
+            jedis.subscribe(adapter, channel);
+        });
     }
 
     @Override
@@ -77,13 +65,9 @@ public class RedisProviderImpl implements RedisProvider {
         checkStatus(subscriber);
         JedisAdapter adapter = new JedisAdapter(subscriber);
         subscribers.put(subscriber, adapter);
-        try {
-            doVoidCall(jedis -> {
-                jedis.subscribe(adapter, pattern);
-            });
-        } catch (JedisException e) {
-            throw e;
-        }
+        doVoidCall(jedis -> {
+            jedis.subscribe(adapter, pattern);
+        });
     }
 
     @Override
