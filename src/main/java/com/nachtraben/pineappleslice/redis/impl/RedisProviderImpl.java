@@ -45,8 +45,16 @@ public class RedisProviderImpl implements RedisProvider {
         if (pool.isClosed())
             throw new IllegalStateException("The redis pool has already been shutdown!");
 
-        Jedis connection = pool.getResource();
-        return new RedisSessionImpl(connection, index);
+        Jedis connection;
+        try {
+           connection = pool.getResource();
+        } catch (JedisException e) {
+            throw e;
+        }
+        if(connection != null)
+            return new RedisSessionImpl(connection, index);
+        else
+            return null;
     }
 
     @Override
@@ -54,9 +62,14 @@ public class RedisProviderImpl implements RedisProvider {
         checkStatus(subscriber);
         JedisAdapter adapter = new JedisAdapter(subscriber);
         subscribers.put(subscriber, adapter);
-        doVoidCall(jedis -> {
-            jedis.subscribe(adapter, channel);
-        });
+        try {
+            doVoidCall(jedis -> {
+                jedis.subscribe(adapter, channel);
+            });
+        } catch (JedisException e) {
+            throw e;
+        }
+
     }
 
     @Override
@@ -64,9 +77,13 @@ public class RedisProviderImpl implements RedisProvider {
         checkStatus(subscriber);
         JedisAdapter adapter = new JedisAdapter(subscriber);
         subscribers.put(subscriber, adapter);
-        doVoidCall(jedis -> {
-            jedis.subscribe(adapter, pattern);
-        });
+        try {
+            doVoidCall(jedis -> {
+                jedis.subscribe(adapter, pattern);
+            });
+        } catch (JedisException e) {
+            throw e;
+        }
     }
 
     @Override
