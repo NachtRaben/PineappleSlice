@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
-import redis.clients.jedis.exceptions.JedisConnectionException;
 import redis.clients.jedis.exceptions.JedisException;
 
 import java.util.HashMap;
@@ -32,6 +31,7 @@ public class RedisProviderImpl implements RedisProvider {
         JedisPoolConfig config = new JedisPoolConfig();
         //config.setMaxWaitMillis(2000);
         //config.setBlockWhenExhausted(true);
+        config.setMaxTotal(properties.getMaxConnections());
         pool = new JedisPool(
                 config,
                 properties.getHost(),

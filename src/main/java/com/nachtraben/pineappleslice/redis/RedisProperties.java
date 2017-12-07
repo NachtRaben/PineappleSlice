@@ -9,12 +9,21 @@ public class RedisProperties {
     private int port = 6379;
     private String password = "";
     private int timeout = 10000;
+    private int maxConnections = 8;
 
     public RedisProperties(String host, int port, String password, int timeout) {
         this.host = host;
         this.port = port;
         this.password = password;
         this.timeout = timeout;
+    }
+
+    public int getMaxConnections() {
+        return maxConnections;
+    }
+
+    public void setMaxConnections(int maxConnections) {
+        this.maxConnections = maxConnections;
     }
 
     public String getHost() {
